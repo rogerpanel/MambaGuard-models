@@ -1,0 +1,402 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!70!black, citecolor=green!50!black, urlcolor=blue!60!black}
+\usepackage[numbers,sort&compress]{natbib}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\begin{document}
+
+\begin{center}
+{\LARGE \textbf{Postdoctoral Research Proposal}}
+
+\vspace{0.5cm}
+
+{\Large \textbf{Proposal 6 of 6}}
+
+\vspace{1cm}
+
+{\huge \textbf{MambaGuard: Selective State-Space Models Augmented with Dynamic Graph Attention for Multi-Protocol LLM Agent Security Monitoring with Game-Theoretic Robustness Certification}}
+
+\vspace{1cm}
+
+{\large \textbf{Principal Investigator:} Dr.\ Roger Nick Anaedevha}
+
+\vspace{0.3cm}
+
+{\large \textbf{Date:} April 2026}
+
+\vspace{0.3cm}
+
+{\large \textbf{Duration:} 24 months}
+
+\vspace{0.3cm}
+
+{\large \textbf{Field:} Protocol Security $\times$ State-Space Models $\times$ Game Theory $\times$ DGNNs}
+
+\end{center}
+
+\vspace{1cm}
+\hrule
+\vspace{0.5cm}
+
+\tableofcontents
+
+\newpage
+
+% ============================================================
+\section{Executive Summary}
+% ============================================================
+
+The emergence of inter-agent communication protocols---MCP (Model Context Protocol), ACP (Agent Communication Protocol), ANP (Agent Network Protocol), and Google's A2A---has created a \textbf{protocol-layer attack surface that barely existed a year ago}. These protocols mediate tool-calling, inter-agent messaging, capability negotiation, and data sharing between LLM agents, yet operate with minimal security monitoring. A 2025 ScienceDirect survey cataloged over thirty protocol-level attack techniques, and the category is growing faster than any other agentic threat vector.
+
+This proposal introduces \textbf{MambaGuard}, a multi-protocol security monitor that leverages \textbf{selective state-space models (SSMs)} for efficient sequence processing of protocol streams, \textbf{dynamic graph attention} for modeling inter-agent communication topology, and \textbf{game-theoretic certification} for provable robustness against adaptive attackers. The key novelty is modeling protocol security as a \textbf{continuous-time graph game} between an attacker who manipulates protocol messages and a defender who monitors the evolving agent interaction graph, with Nash equilibrium strategies providing certified defense bounds. MambaGuard processes protocol streams at $\calO(L \log L)$ complexity, enabling real-time monitoring of million-message-per-second multi-agent deployments. Expected outcomes: $\geq$95\% detection across MCP/ACP/A2A attack types, $<$5ms per-message latency, and game-theoretic certification ensuring no-regret defense strategies with regret bound $R(T) \leq \sqrt{T \log |S|}$.
+
+% ============================================================
+\section{Problem Statement and Research Gap}
+% ============================================================
+
+\subsection{The Protocol Security Crisis}
+
+LLM agent protocols have proliferated rapidly in 2025--2026:
+
+\textbf{MCP (Model Context Protocol):} Anthropic's protocol for connecting LLMs to external tools, data sources, and services. Enables resource access, tool invocation, and prompt templating.
+
+\textbf{ACP (Agent Communication Protocol):} Standardizes inter-agent communication with message types for task delegation, status reporting, and capability negotiation.
+
+\textbf{A2A (Agent-to-Agent Protocol):} Google's specification for agent collaboration, including ``Agent Cards'' for capability advertisement and task decomposition.
+
+\textbf{ANP (Agent Network Protocol):} Enables agent discovery and collaboration across organizational boundaries.
+
+These protocols introduce vulnerabilities at four levels:
+
+\begin{enumerate}
+    \item \textbf{Message injection:} Malicious tool responses or inter-agent messages that contain prompt injections targeting the receiving agent.
+    
+    \item \textbf{Capability impersonation:} Agents advertising false capabilities via Agent Cards to attract and manipulate task delegation.
+    
+    \item \textbf{Data exfiltration:} Exploiting tool-use protocols to leak sensitive information through side channels (timing, error messages, capability queries).
+    
+    \item \textbf{Cascade amplification:} Leveraging protocol-mediated communication chains to amplify single-point failures across agent networks.
+\end{enumerate}
+
+\subsection{The Monitoring Gap}
+
+\begin{table}[H]
+\centering
+\caption{Protocol-Layer Defense Coverage}
+\begin{tabularx}{\textwidth}{@{}lcccccc@{}}
+\toprule
+\textbf{System} & \textbf{MCP} & \textbf{ACP} & \textbf{A2A} & \textbf{Real-time} & \textbf{Certified} & \textbf{Graph-aware} \\
+\midrule
+ClawGuard & Partial & No & No & Yes & No & No \\
+AgentArmor & No & No & No & Yes & No & PDG only \\
+Protocol scanners & Per-msg & No & No & Yes & No & No \\
+\textbf{MambaGuard (ours)} & \textbf{Yes} & \textbf{Yes} & \textbf{Yes} & \textbf{Yes} & \textbf{Yes} & \textbf{Yes} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{No existing system provides unified, graph-aware, game-theoretically certified security monitoring across multiple LLM agent protocols.} ClawGuard monitors tool-call boundaries but doesn't model the inter-agent communication graph. AgentArmor uses program dependency graphs for single-agent traces but lacks protocol awareness. Protocol-specific scanners check individual messages but miss relational attack patterns.
+
+\subsection{Why SSMs + Dynamic Graphs + Game Theory?}
+
+\begin{itemize}
+    \item \textbf{SSMs for efficiency:} Protocol streams can reach millions of messages per second in production multi-agent systems. Mamba's $\calO(L \log L)$ complexity (vs.\ transformers' $\calO(L^2)$) is essential for real-time monitoring. The PI's MambaShield validates this approach in the NIDPS domain.
+    
+    \item \textbf{Dynamic graphs for structure:} Protocol interactions form an evolving heterogeneous graph: agents $\leftrightarrow$ tools $\leftrightarrow$ messages $\leftrightarrow$ capabilities. Attack patterns manifest as anomalous subgraph structures (injection chains, impersonation stars, exfiltration paths).
+    
+    \item \textbf{Game theory for certification:} Protocol security is inherently adversarial. The PI's game-theoretic certification framework (Stackelberg equilibria, multiplicative weights with no-regret guarantees) provides the right formalism for proving that the monitor's strategy is robust against adaptive attackers.
+\end{itemize}
+
+% ============================================================
+\section{Research Objectives}
+% ============================================================
+
+\begin{enumerate}
+    \item \textbf{O1:} Design a unified protocol message representation that abstracts MCP, ACP, A2A, and ANP into a common heterogeneous dynamic graph schema.
+    
+    \item \textbf{O2:} Develop the \textbf{Mamba-Graph Attention} architecture that combines SSM-based sequential processing of protocol streams with graph attention over the agent interaction topology.
+    
+    \item \textbf{O3:} Formulate protocol security as a continuous-time graph game with formal Stackelberg equilibrium analysis, providing certified defense strategies.
+    
+    \item \textbf{O4:} Prove no-regret bounds for the monitor's online strategy: $R(T) \leq \sqrt{T \log |S|}$ where $|S|$ is the number of defense actions.
+    
+    \item \textbf{O5:} Build \textbf{ProtocolBench}, a multi-protocol security benchmark with $\geq$50 attack scenarios across MCP/ACP/A2A.
+    
+    \item \textbf{O6:} Deploy MambaGuard at $>$1M messages/second with $<$5ms latency and $<$1\% throughput overhead.
+\end{enumerate}
+
+% ============================================================
+\section{Proposed Methodology}
+% ============================================================
+
+\subsection{Phase 1: Unified Protocol Graph Abstraction (Months 1--5)}
+
+\subsubsection{Protocol Normalization Layer}
+
+Define protocol-agnostic message types that cover MCP, ACP, A2A, and ANP:
+
+\begin{align}
+    \mathcal{M}_{\text{tool}} &: \text{Tool invocation/response (MCP tools, A2A tasks)} \\
+    \mathcal{M}_{\text{comm}} &: \text{Inter-agent communication (ACP messages, ANP discovery)} \\
+    \mathcal{M}_{\text{cap}} &: \text{Capability advertisement/negotiation (Agent Cards, MCP resources)} \\
+    \mathcal{M}_{\text{data}} &: \text{Data transfer (MCP resources, ACP payloads)} \\
+    \mathcal{M}_{\text{ctrl}} &: \text{Control flow (task delegation, status, lifecycle)}
+\end{align}
+
+Each message is mapped to a canonical representation $\mathbf{m} = (\text{type}, \text{src}, \text{dst}, \text{payload\_emb}, \text{metadata}, t)$.
+
+\subsubsection{Dynamic Protocol Graph}
+
+The evolving protocol graph $\calG(t) = (V(t), E(t), \mathbf{X}(t))$:
+
+\textbf{Nodes:}
+$V_A$ (agents), $V_T$ (tools/services), $V_C$ (capability descriptors), $V_S$ (sessions).
+
+\textbf{Edges with temporal stamps:}
+\texttt{agent-calls-tool}$(t)$, \texttt{agent-messages-agent}$(t)$, \texttt{agent-advertises-capability}$(t)$, \texttt{tool-returns-data}$(t)$, \texttt{agent-delegates-task}$(t)$.
+
+\textbf{Edge features:} Message type, payload embedding (from frozen sentence-transformer), response latency, error codes, data volume, authentication tokens (hashed).
+
+\subsection{Phase 2: Mamba-Graph Attention Architecture (Months 3--10)}
+
+\subsubsection{Architecture Overview}
+
+The architecture processes protocol streams in two stages:
+
+\textbf{Stage 1: SSM Sequential Processing.} For each agent $a$, its incoming/outgoing protocol message stream $\{m_1^a, m_2^a, \ldots, m_t^a\}$ is processed by a selective SSM (Mamba) block to produce per-agent sequential features:
+
+\begin{equation}
+    \mathbf{z}_a(t) = \text{MambaBlock}\left(\{\mathbf{m}_i^a\}_{i \leq t}\right) \in \R^{d_z}
+\end{equation}
+
+This captures the temporal patterns of each agent's protocol behavior at $\calO(L \log L)$ cost via FFT-based convolutions.
+
+\textbf{Stage 2: Graph Attention Relational Processing.} The agent-level features are propagated through the protocol graph using temporal graph attention:
+
+\begin{equation}
+    \mathbf{h}_a(t) = \text{GATConv}\left(\mathbf{z}_a(t),\; \{(\mathbf{z}_{a'}(t), \mathbf{e}_{a,a'}(t))\}_{a' \in \mathcal{N}(a,t)}\right)
+\end{equation}
+
+where $\mathbf{e}_{a,a'}(t)$ encodes the edge features of the most recent communication between agents $a$ and $a'$.
+
+\textbf{Key design choice:} By separating sequential (Mamba) and relational (GAT) processing, we avoid the computational cost of full spatio-temporal attention while capturing both modalities. The Mamba block handles within-agent temporal dynamics; the GAT handles between-agent relational dynamics.
+
+\subsubsection{ODE-Enhanced Dynamics}
+
+For long-horizon monitoring, augment the Mamba output with a Neural ODE layer (from CT-TGNN):
+
+\begin{equation}
+    \frac{d\mathbf{h}_a(t)}{dt} = f_\theta\left(\mathbf{h}_a(t), \mathbf{z}_a(t), \text{GATAgg}(\mathcal{N}(a,t)), t\right)
+\end{equation}
+
+This allows the system to model slow-evolving attack patterns (capability accumulation, gradual trust escalation) alongside fast events (injection, exfiltration).
+
+\subsection{Phase 3: Game-Theoretic Certification (Months 6--14)}
+
+\subsubsection{The Protocol Security Game}
+
+Model the interaction as a two-player game:
+
+\begin{definition}[Protocol Security Game]
+$\Gamma = (\mathcal{A}_{\text{atk}}, \mathcal{A}_{\text{def}}, u_{\text{atk}}, u_{\text{def}}, \calG(t))$ where:
+\begin{itemize}
+    \item $\mathcal{A}_{\text{atk}}$: Attacker action space (message injection, impersonation, exfiltration routing, cascade seeding).
+    \item $\mathcal{A}_{\text{def}}$: Defender action space (message blocking, agent isolation, capability revocation, session termination, deep inspection).
+    \item $u_{\text{atk}}, u_{\text{def}}$: Utility functions defined over the evolving protocol graph.
+    \item $\calG(t)$: The protocol graph as the ``board state.''
+\end{itemize}
+\end{definition}
+
+\subsubsection{Stackelberg Equilibrium Analysis}
+
+The defender commits to a monitoring strategy first (leader); the attacker best-responds. The Stackelberg equilibrium defense strategy maximizes the defender's worst-case utility:
+
+\begin{equation}
+    \boldsymbol{\pi}_{\text{def}}^* = \arg\max_{\boldsymbol{\pi}_{\text{def}}} \min_{\boldsymbol{\pi}_{\text{atk}} \in BR(\boldsymbol{\pi}_{\text{def}})} u_{\text{def}}(\boldsymbol{\pi}_{\text{def}}, \boldsymbol{\pi}_{\text{atk}}, \calG)
+\end{equation}
+
+We compute this via the multiple LP formulation for Bayesian Stackelberg games (extending the PI's game-theoretic certification framework).
+
+\subsubsection{Online No-Regret Defense}
+
+For adaptive attackers who change strategies over time, we apply the multiplicative weights update (MWU):
+
+\begin{algorithm}[H]
+\caption{MambaGuard Online Defense}
+\begin{algorithmic}[1]
+\STATE Initialize weights $w_1(s) = 1$ for each defense action $s \in S$
+\FOR{round $t = 1, \ldots, T$}
+    \STATE Observe protocol graph $\calG(t)$
+    \STATE Compute Mamba-GAT features $\{\mathbf{h}_a(t)\}$
+    \STATE Play mixed strategy $p_t(s) = w_t(s) / \sum_{s'} w_t(s')$
+    \STATE Observe attacker action (or estimate via anomaly scores)
+    \STATE Compute loss $\ell_t(s)$ for each defense action
+    \STATE Update: $w_{t+1}(s) = w_t(s) \cdot \exp(-\eta \ell_t(s))$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}[No-Regret Bound]
+MambaGuard's online defense strategy achieves regret:
+\begin{equation}
+    R(T) = \sum_{t=1}^T \ell_t(\pi_t) - \min_{s \in S} \sum_{t=1}^T \ell_t(s) \leq \sqrt{T \ln |S|}
+\end{equation}
+guaranteeing that the average defense performance converges to the best fixed strategy in hindsight, regardless of the attacker's (possibly adversarial) strategy sequence.
+\end{theorem}
+
+\subsubsection{Integration with Lipschitz Certification}
+
+Combine the game-theoretic guarantees with Lipschitz-based robustness of the Mamba-GAT detector:
+
+\begin{equation}
+    \text{Certified defense quality} = \underbrace{V^*_{\text{Stackelberg}}}_{\text{game value}} - \underbrace{L_{\text{Mamba-GAT}} \cdot \epsilon}_{\text{detection perturbation margin}} - \underbrace{\sqrt{\frac{\ln |S|}{T}}}_{\text{online learning cost}}
+\end{equation}
+
+This provides a three-layer certification: game-theoretic optimality, detection robustness, and online adaptivity.
+
+\subsection{Phase 4: Benchmark and Deployment (Months 12--22)}
+
+\subsubsection{ProtocolBench}
+
+Multi-protocol security benchmark with:
+
+\begin{itemize}
+    \item \textbf{MCP attacks:} Tool-response injection, resource poisoning, prompt template manipulation. 15 scenarios.
+    \item \textbf{ACP attacks:} Message impersonation, task hijacking, status spoofing, cascade injection. 15 scenarios.
+    \item \textbf{A2A attacks:} Agent Card forgery, capability impersonation, task-decomposition exploitation. 10 scenarios.
+    \item \textbf{Cross-protocol attacks:} MCP$\to$ACP privilege escalation, A2A$\to$MCP data exfiltration. 10 scenarios.
+    \item \textbf{Benign traffic:} 500K+ legitimate multi-agent protocol interactions across 20 application domains.
+\end{itemize}
+
+% ============================================================
+\section{Datasets and Resources}
+% ============================================================
+
+\begin{table}[H]
+\centering
+\caption{Datasets and Resources}
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+\textbf{Dataset} & \textbf{Description} & \textbf{Source} \\
+\midrule
+AgentDojo & 97 tasks, 629 security test cases for tool-using agents & \url{https://github.com/ethz-spylab/agentdojo} \\
+\addlinespace
+MCP Specification & Model Context Protocol spec and reference implementation & \url{https://github.com/modelcontextprotocol/specification} \\
+\addlinespace
+A2A Protocol & Google's Agent-to-Agent protocol specification & \url{https://github.com/google/A2A} \\
+\addlinespace
+InjectAgent & 1,054 indirect prompt injection test cases & \url{https://github.com/safeagent/InjectAgent} \\
+\addlinespace
+CIC-IoT-2023 & Network intrusion events for cross-domain validation & \url{https://www.unb.ca/cic/datasets/iotdataset-2023.html} \\
+\addlinespace
+CSE-CICIDS2018 & Network security dataset for protocol-level analysis & \url{https://www.unb.ca/cic/datasets/ids-2018.html} \\
+\addlinespace
+MACHIAVELLI & 134 text-game environments for agent harm measurement & \url{https://github.com/aypan17/machiavelli} \\
+\addlinespace
+TGB 2.0 & Temporal graph benchmarks for dynamic link prediction & \url{https://tgb.complexdatalab.com/} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+\section{Expected Outcomes}
+% ============================================================
+
+\begin{enumerate}
+    \item \textbf{MambaGuard System:} First unified multi-protocol security monitor with $\geq$95\% detection across MCP/ACP/A2A attack types, $<$5ms per-message latency at $>$1M msg/s throughput.
+    
+    \item \textbf{Mamba-Graph Attention Architecture:} Novel hybrid architecture combining SSM sequential efficiency with graph attention relational reasoning, validated at scale.
+    
+    \item \textbf{Game-Theoretic Certification:} Stackelberg equilibrium defense strategies with no-regret online adaptation and $R(T) \leq \sqrt{T \ln |S|}$ guarantee.
+    
+    \item \textbf{Three-Layer Certification:} Integrated game-theoretic + Lipschitz + online-learning certification---the first such combined guarantee for protocol security.
+    
+    \item \textbf{ProtocolBench:} Public benchmark with 50+ attack scenarios across four LLM agent protocols.
+    
+    \item \textbf{Publications:} Target: IEEE S\&P, USENIX Security, NeurIPS, AAAI (2--3 papers).
+    
+    \item \textbf{Industry Impact:} Deployable as a protocol-agnostic security layer for enterprise multi-agent systems.
+\end{enumerate}
+
+% ============================================================
+\section{Timeline}
+% ============================================================
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Period} & \textbf{Activities} \\
+\midrule
+Months 1--5 & Protocol normalization; unified graph schema; MCP/ACP/A2A parser development \\
+Months 3--10 & Mamba-Graph Attention architecture; SSM+GAT integration; training pipeline \\
+Months 6--14 & Game-theoretic framework; Stackelberg analysis; MWU online defense; proofs \\
+Months 12--18 & ProtocolBench construction; multi-protocol attack simulation \\
+Months 16--22 & Production deployment; throughput optimization; ablation studies \\
+Months 20--24 & Paper writing; open-source release; enterprise pilot \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+\section{Relation to Prior Work by the PI}
+% ============================================================
+
+\begin{itemize}
+    \item \textbf{MambaShield} $\to$ SSM-based efficient inference directly extended to protocol stream processing; PAC-Bayesian certificates adapted.
+    \item \textbf{Game-theoretic certification} $\to$ Stackelberg equilibria and MWU no-regret guarantees ($R(T) \leq \sqrt{T \log |S|}$) applied to protocol security games.
+    \item \textbf{CT-TGNN} $\to$ Neural ODE dynamics for long-horizon protocol monitoring.
+    \item \textbf{FedLLM-API} $\to$ Byzantine resilience concepts adapted to multi-agent protocol trust.
+    \item \textbf{CyberSecLLM} $\to$ Domain LLM for semantic analysis of protocol message content.
+    \item \textbf{RobustIDPS.ai} $\to$ Real-time deployment pipeline and production architecture template.
+\end{itemize}
+
+% ============================================================
+\section{Significance}
+% ============================================================
+
+Protocol-level security for LLM agent systems is widely recognized as the most under-defended frontier in AI security. MambaGuard would be the \textbf{first system to provide unified, graph-aware, game-theoretically certified security monitoring across multiple LLM agent protocols}. The three-layer certification framework (game-theoretic optimality + Lipschitz robustness + online no-regret adaptation) establishes a mathematical standard for protocol security that moves beyond the current reactive, empirical paradigm. As MCP, ACP, and A2A become the infrastructure layer for enterprise AI, this work addresses a gap that will only grow more critical.
+
+\vspace{1cm}
+\hrule
+\vspace{0.3cm}
+\begin{center}
+\textit{End of Proposal 6}
+\end{center}
+
+\end{document}
