@@ -245,7 +245,7 @@ Released under the **MIT License** — see [`LICENSE`](LICENSE). Trained checkpo
 
 ## Contact
 
-- Roger Nick Anaedevha — `rnanaedevha@mephi.ru`
+- Roger Nick Anaedevha — `ar006@campus.mephi.ru`
 - Alexander G. Trofimov — `agtrofimov@mephi.ru`
 - Issues and pull requests: <https://github.com/rogerpanel/MambaGuard-models/issues>
 - Production platform feedback: <https://github.com/rogerpanel/robustidps.ai/discussions>
