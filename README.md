@@ -9,7 +9,7 @@
 
 **Authors**
 
-- Roger Nick Anaedevha — `rnanaedevha@mephi.ru`
+- Roger Nick Anaedevha — `ar006@campus.mephi.ru`
 - Alexander G. Trofimov — `agtrofimov@mephi.ru`
 
 **Affiliation**
