@@ -1,0 +1,31 @@
+# MambaGuard model hyper-parameters.
+# Corresponds to Section 4 of the paper ("Selective State-Space Architecture")
+# and Table 2 ("Default model configuration").
+
+name: mambaguard
+
+# Selective state-space backbone
+d_model: 256          # hidden dim
+d_state: 16           # SSM state size
+expand: 2             # inner expansion factor
+kernel_size: 4        # causal Conv1d kernel
+n_layers: 4           # stacked Mamba blocks
+n_heads: 4            # number of attention heads for hybrid block
+dropout: 0.1
+
+# Temporal positional encoding
+d_T: 64               # time2vec embedding dim
+
+# Edge / node feature dims (must match data.canonicalize.metadata_to_vector)
+d_p: 384              # payload embedding (all-MiniLM-L6-v2)
+d_metadata: 16        # metadata vector (DEFAULT_METADATA_SCHEMA length)
+
+# Classification head
+num_classes: 34       # 33 attack families + benign (Section 5.1)
+
+# Optional protocol-graph branch
+graph:
+  enabled: true
+  hidden: 128
+  n_layers: 2
+  gnn_type: gat       # {gat, gcn, sage}

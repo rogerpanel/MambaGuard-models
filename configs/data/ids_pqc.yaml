@@ -1,0 +1,15 @@
+# IDS-PQC dataset: NF-CSE-CIC-IDS2018-v3 with post-quantum-TLS captures.
+# Corresponds to Section 5.4 of the paper.
+#
+# Source: Sarhan et al. 2024 NetFlow-v3 re-encoding with appended PQ-TLS
+# handshakes; mirrored on Kaggle DOI 10.34740/kaggle/dsv/15424420 (variant).
+
+name: ids_pqc
+composite: false
+loader: nf_cse_cic_ids2018_v3_pqc
+root: ${oc.env:DATA_ROOT,data}/nf-cse-cic-ids2018-v3-pqc
+
+window_size: 128
+augmentations:
+  message_dropout: 0.05
+  latency_jitter_ms: 2.0

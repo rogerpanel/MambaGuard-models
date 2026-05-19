@@ -1,0 +1,14 @@
+# AgentDojo benchmark.
+# Corresponds to Section 5.5 of the paper (LLM-agent benchmarks).
+# Source: https://github.com/ethz-spylab/agentdojo  (629 cases)
+# Citation: Debenedetti et al., NeurIPS Datasets & Benchmarks 2024.
+
+name: agentdojo
+composite: false
+loader: agentdojo
+root: ${oc.env:DATA_ROOT,data}/agentdojo
+
+window_size: 64
+augmentations:
+  message_dropout: 0.0
+  latency_jitter_ms: 0.0

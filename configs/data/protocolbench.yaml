@@ -1,0 +1,13 @@
+# ProtocolBench (this paper).
+# Corresponds to Section 5.6 of the paper (cross-protocol scenarios).
+# Local JSONL with scenarios across MCP / ACP / A2A / cross-protocol.
+
+name: protocolbench
+composite: false
+loader: protocolbench
+root: ${oc.env:DATA_ROOT,data}/protocolbench
+
+window_size: 128
+augmentations:
+  message_dropout: 0.05
+  latency_jitter_ms: 1.0

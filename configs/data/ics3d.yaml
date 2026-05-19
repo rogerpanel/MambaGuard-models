@@ -1,0 +1,24 @@
+# ICS3D composite: Industrial-Control / Cloud / Container triple.
+# Corresponds to Section 5.3 of the paper.
+#
+# Sources:
+#   * Microsoft Cloud sign-in / telemetry exports
+#   * Edge-IIoTset    -- https://ieee-dataport.org/documents/edge-iiotset
+#   * Kubernetes / Docker audit logs
+
+name: ics3d
+composite: true
+loaders:
+  - microsoft_cloud_telemetry
+  - edge_iiotset
+  - kubernetes_audit
+
+roots:
+  microsoft_cloud_telemetry: ${oc.env:DATA_ROOT,data}/ms-cloud-telemetry
+  edge_iiotset:              ${oc.env:DATA_ROOT,data}/edge-iiotset
+  kubernetes_audit:          ${oc.env:DATA_ROOT,data}/k8s-audit
+
+window_size: 128
+augmentations:
+  message_dropout: 0.1
+  latency_jitter_ms: 5.0

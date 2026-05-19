@@ -1,0 +1,42 @@
+# Certified-detection configuration.
+# Corresponds to Section 7 of the paper ("Hedge-Stackelberg Certification").
+
+name: default
+
+# Online Hedge mixing parameter; eta_t = sqrt(log K / t) per Eq. (15).
+hedge:
+  # If null, use the closed-form schedule above; otherwise a constant.
+  eta: null
+  eta_floor: 1.0e-3
+
+# Adversary perturbation budgets evaluated for ROC / certified-accuracy curves.
+perturbation_budgets:
+  - 0.01
+  - 0.02
+  - 0.05
+  - 0.10
+
+# Stackelberg solver -- leader-follower min-max optimisation.
+stackelberg:
+  solver_backend: cvxpy        # {cvxpy, scs, mosek}
+  max_iters: 200
+  tol: 1.0e-6
+
+# Defender action set (Section 7.2).
+defender_actions:
+  - allow
+  - rate_limit
+  - quarantine
+  - drop
+  - require_reauth
+  - rotate_credential
+
+# Seven attacker families enumerated in the paper (Section 7.3).
+attacker_actions:
+  - prompt_injection
+  - tool_misuse
+  - capability_escalation
+  - credential_exfiltration
+  - denial_of_service
+  - protocol_downgrade
+  - lateral_movement

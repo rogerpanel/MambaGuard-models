@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: "MambaGuard: Certified Selective State-Space Detection for Multi-Protocol LLM Agent Security"
+message: "If you use this software, please cite both the software and the associated paper."
+type: software
+authors:
+  - family-names: Anaedevha
+    given-names: Roger Nick
+    affiliation: "Institute of Cyber Intelligence Systems (ICIS), National Research Nuclear University MEPhI"
+    email: rnanaedevha@mephi.ru
+  - family-names: Trofimov
+    given-names: Alexander G.
+    affiliation: "Institute of Cyber Intelligence Systems (ICIS), National Research Nuclear University MEPhI"
+repository-code: "https://github.com/rogerpanel/MambaGuard-models"
+url: "https://github.com/rogerpanel/robustidps.ai"
+license: MIT
+version: "1.0.0"
+date-released: "2026-05-19"
+keywords:
+  - state-space models
+  - Mamba
+  - graph neural networks
+  - intrusion detection
+  - LLM agent security
+  - Model Context Protocol
+  - certified robustness
+  - Stackelberg game
+preferred-citation:
+  type: article
+  title: "MambaGuard: Certified Selective State-Space Detection for Multi-Protocol LLM Agent Security"
+  authors:
+    - family-names: Anaedevha
+      given-names: Roger Nick
+      affiliation: "Institute of Cyber Intelligence Systems (ICIS), National Research Nuclear University MEPhI"
+    - family-names: Trofimov
+      given-names: Alexander G.
+      affiliation: "Institute of Cyber Intelligence Systems (ICIS), National Research Nuclear University MEPhI"
+  journal: "IEEE Transactions on Neural Networks and Learning Systems"
+  year: 2026
+  month: 5
+  publisher:
+    name: "IEEE"

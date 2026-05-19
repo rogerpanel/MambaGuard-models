@@ -1,0 +1,14 @@
+# InjecAgent benchmark.
+# Corresponds to Section 5.5 of the paper (LLM-agent benchmarks).
+# Source: https://github.com/uiuc-kang-lab/InjecAgent  (1054 cases)
+# Citation: Zhan et al., ACL Findings 2024.
+
+name: injecagent
+composite: false
+loader: injecagent
+root: ${oc.env:DATA_ROOT,data}/injecagent
+
+window_size: 64
+augmentations:
+  message_dropout: 0.0
+  latency_jitter_ms: 0.0

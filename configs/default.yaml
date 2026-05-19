@@ -1,0 +1,19 @@
+# MambaGuard top-level configuration (composed via Hydra).
+# Corresponds to Section 6 of the paper ("Experimental Protocol").
+#
+# Use:  python -m mambaguard.training.train --config-name default \
+#           data=iis3d  model=mambaguard  training=default  certification=default
+
+defaults:
+  - model: mambaguard
+  - data: iis3d
+  - training: default
+  - certification: default
+  - _self_
+
+run:
+  name: mambaguard_default
+  output_dir: outputs/${run.name}
+  log_every: 50
+  eval_every: 1   # epochs
+  save_top_k: 3

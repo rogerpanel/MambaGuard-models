@@ -1,0 +1,24 @@
+# IIS3D composite: Internet/IoT/IDS triple.
+# Corresponds to Section 5.2 of the paper.
+#
+# Sources:
+#   * CSE-CIC-IDS2018 -- https://www.unb.ca/cic/datasets/ids-2018.html
+#   * CIC-IoT2023     -- https://www.unb.ca/cic/datasets/iotdataset-2023.html
+#   * UNSW-NB15       -- https://research.unsw.edu.au/projects/unsw-nb15-dataset
+
+name: iis3d
+composite: true
+loaders:
+  - cse_cic_ids2018
+  - cic_iot2023
+  - unsw_nb15
+
+roots:
+  cse_cic_ids2018: ${oc.env:DATA_ROOT,data}/cse-cic-ids2018
+  cic_iot2023:    ${oc.env:DATA_ROOT,data}/cic-iot2023
+  unsw_nb15:      ${oc.env:DATA_ROOT,data}/unsw-nb15
+
+window_size: 128
+augmentations:
+  message_dropout: 0.1
+  latency_jitter_ms: 5.0
